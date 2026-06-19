@@ -30,6 +30,16 @@ export default function DashboardPage() {
     fetchLinks();
   }, [fetchLinks]);
 
+  const handleDeleted = useCallback((id: string) => {
+    setLinks((prev) => prev.filter((l) => l.id !== id));
+  }, []);
+
+  const handleUpdated = useCallback((id: string, newSlug: string) => {
+    setLinks((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, slug: newSlug } : l)),
+    );
+  }, []);
+
   const totalClicks = links.reduce((sum, l) => sum + l._count.clicks, 0);
 
   return (
@@ -56,7 +66,12 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-3">
             {links.map((link) => (
-              <LinkCard key={link.id} link={link} />
+              <LinkCard
+                key={link.id}
+                link={link}
+                onDeleted={handleDeleted}
+                onUpdated={handleUpdated}
+              />
             ))}
           </div>
         )}
