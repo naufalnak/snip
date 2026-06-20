@@ -1,24 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
-const RESERVED_PATHS = [
-  "dashboard",
-  "api",
-  "not-found",
-  "_next",
-  "favicon.ico",
-];
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const isOnDashboard = req.nextUrl.pathname.startsWith("/dashboard");
+  const isOnLogin = req.nextUrl.pathname.startsWith("/login");
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const slug = pathname.split("/")[1];
+  if (isOnDashboard && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 
-  if (RESERVED_PATHS.includes(slug)) {
-    return NextResponse.next();
+  if (isOnLogin && isLoggedIn) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth).*)"],
 };

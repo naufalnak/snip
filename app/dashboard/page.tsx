@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { signOut } from "next-auth/react";
 import CreateLinkForm from "@/components/CreateLinkForm";
 import LinkCard from "@/components/LinkCard";
 
@@ -40,17 +41,28 @@ export default function DashboardPage() {
     );
   }, []);
 
+  async function handleLogout() {
+    await signOut({ callbackUrl: "/login" });
+  }
+
   const totalClicks = links.reduce((sum, l) => sum + l._count.clicks, 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-xl font-medium text-gray-900">Short Links</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {links.length} link · {totalClicks} total klik
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl font-medium text-gray-900">Short Links</h1>
+            <p className="text-sm text-gray-400 mt-1">
+              {links.length} link · {totalClicks} total klik
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-sm text-gray-400 hover:text-gray-600">
+            Logout
+          </button>
         </div>
 
         {/* Form */}

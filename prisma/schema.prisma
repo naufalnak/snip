@@ -27,3 +27,26 @@ model Click {
   @@index([linkId])
   @@index([clickedAt])
 }
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String
+  createdAt     DateTime  @default(now())
+}
+
+// Required by NextAuth v5
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
